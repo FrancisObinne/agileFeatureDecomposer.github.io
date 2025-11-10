@@ -1,367 +1,382 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agile Feature Decomposer (AFD)</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
-        body { font-family: 'Inter', sans-serif; background-color: #f7f7f7; }
-        .json-output {
-            background-color: #1e1e1e;
-            color: #d4d4d4;
-            padding: 1rem;
-            border-radius: 0.75rem;
-            font-family: monospace;
-            white-space: pre-wrap;
-            overflow-x: auto;
-            line-height: 1.5;
-            min-height: 200px;
-        }
-        .json-key { color: #569cd6; } /* Blue */
-        .json-string { color: #ce9178; } /* Orange */
-        .json-number { color: #b5cea8; } /* Green */
-        .json-punct { color: #d4d4d4; } /* White */
-    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agile Feature Decomposer (AFD)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f7f7f7; }
+        .json-output {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            font-family: monospace;
+            white-space: pre-wrap;
+            overflow-x: auto;
+            line-height: 1.5;
+            min-height: 200px;
+        }
+        .json-key { color: #569cd6; } /* Blue */
+        .json-string { color: #ce9178; } /* Orange */
+        .json-number { color: #b5cea8; } /* Green */
+        .json-punct { color: #d4d4d4; } /* White */
+    </style>
 </head>
 <body class="p-4 sm:p-8 min-h-screen">
 
-    <div id="app" class="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-xl shadow-2xl transition duration-300">
-        <header class="text-center mb-8">
-            <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-2">
-                Agile Feature Decomposer (AFD)
-            </h1>
-            <p id="user-info" class="text-sm text-gray-500">Initializing...</p>
-        </header>
+    <div id="app" class="max-w-4xl mx-auto bg-white p-6 sm:p-10 rounded-xl shadow-2xl transition duration-300">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-2">
+                Agile Feature Decomposer (AFD)
+            </h1>
+            <p id="user-info" class="text-sm text-gray-500">Initializing...</p>
+        </header>
 
-        <section class="grid md:grid-cols-2 gap-8">
-            <!-- Input & Control Panel -->
-            <div class="bg-blue-50 p-6 rounded-xl shadow-inner">
-                <h2 class="text-xl font-bold text-gray-800 mb-4">
-                    1. Define the Project Goal
-                </h2>
-                <textarea id="prompt-input"
-                          class="w-full p-3 border border-blue-200 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-700 resize-y min-h-[150px] transition duration-150"
-                          placeholder="Example: As a user, I want a secure login page with password reset capabilities."></textarea>
+        <section class="grid md:grid-cols-2 gap-8">
+                        <div class="bg-blue-50 p-6 rounded-xl shadow-inner">
+                <h2 class="text-xl font-bold text-gray-800 mb-4">
+                    1. Define the Project Goal
+                </h2>
+                <textarea id="prompt-input"
+                          class="w-full p-3 border border-blue-200 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-gray-700 resize-y min-h-[150px] transition duration-150"
+                          placeholder="Example: As a user, I want a secure login page with password reset capabilities."></textarea>
 
-                <button id="generate-button" onclick="handleSubmit()"
-                        class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition duration-150 ease-in-out shadow-md hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-300 disabled:opacity-50 flex items-center justify-center">
-                    <span id="button-text">Generate Structured Plan</span>
-                    <svg id="loading-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                </button>
-            </div>
-
-            <!-- Output Panel -->
-            <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
-                <h2 class="text-xl font-bold text-white mb-4 flex justify-between items-center">
-                    2. Structured JSON Output
-                    <span id="plan-id-display" class="text-sm bg-blue-600 px-3 py-1 rounded-full text-white font-medium hidden"></span>
-                </h2>
-                <div id="result-output" class="json-output">
-                    <!-- JSON will be displayed here -->
-                    The plan will be generated here as a perfectly structured JSON array, ready to be ingested by a database or ticket system.
+                <div class="mt-4">
+                    <label for="api-key-input" class="block text-sm font-medium text-gray-700 mb-1">
+                        Gemini API Key (Required)
+                    </label>
+                    <input type="password" id="api-key-input"
+                        class="w-full p-3 border border-yellow-300 bg-yellow-100 rounded-lg focus:ring-yellow-500 focus:border-yellow-500 text-gray-700 transition duration-150"
+                        placeholder="Paste your API key here (AIzaSy...)"
+                        title="Your API key is only used for the generation request and is not stored."
+                    >
                 </div>
-            </div>
-        </section>
+                                <button id="generate-button" onclick="handleSubmit()"
+                        class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition duration-150 ease-in-out shadow-md hover:shadow-xl focus:outline-none focus:ring-4 focus:ring-blue-300 disabled:opacity-50 flex items-center justify-center">
+                    <span id="button-text">Generate Structured Plan</span>
+                    <svg id="loading-spinner" class="animate-spin -ml-1 mr-3 h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </button>
+            </div>
 
-        <!-- Firestore Real-Time Log -->
-        <section class="mt-10">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">
-                3. Collaborative Plan History
-            </h2>
-            <div id="plan-history" class="space-y-4 max-h-96 overflow-y-auto pr-2">
-                <p class="text-gray-500 text-center" id="history-status">Loading previous plans...</p>
-            </div>
-        </section>
-    </div>
+                        <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
+                <h2 class="text-xl font-bold text-white mb-4 flex justify-between items-center">
+                    2. Structured JSON Output
+                    <span id="plan-id-display" class="text-sm bg-blue-600 px-3 py-1 rounded-full text-white font-medium hidden"></span>
+                </h2>
+                <div id="result-output" class="json-output">
+                                        The plan will be generated here as a perfectly structured JSON array, ready to be ingested by a database or ticket system.
+                </div>
+            </div>
+        </section>
 
-    <!-- Firebase Imports and Logic -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, onSnapshot, collection, query, orderBy, addDoc, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+                <section class="mt-10">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4 border-b pb-2">
+                3. Collaborative Plan History
+            </h2>
+            <div id="plan-history" class="space-y-4 max-h-96 overflow-y-auto pr-2">
+                <p class="text-gray-500 text-center" id="history-status">Loading previous plans...</p>
+            </div>
+        </section>
+    </div>
 
-        // --- GLOBAL VARIABLES (Mandatory Canvas Environment) ---
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
-        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+        <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, onSnapshot, collection, query, orderBy, addDoc, serverTimestamp, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        let db = null;
-        let auth = null;
-        let userId = null;
-        let isAuthReady = false;
+        // --- GLOBAL VARIABLES (Mandatory Canvas Environment) ---
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const firebaseConfig = JSON.parse(typeof __firebase_config !== 'undefined' ? __firebase_config : '{}');
+        const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-        // UI Elements
-        const promptInput = document.getElementById('prompt-input');
-        const generateButton = document.getElementById('generate-button');
-        const buttonText = document.getElementById('button-text');
-        const loadingSpinner = document.getElementById('loading-spinner');
-        const resultOutput = document.getElementById('result-output');
-        const planHistory = document.getElementById('plan-history');
-        const userInfo = document.getElementById('user-info');
-        const planIdDisplay = document.getElementById('plan-id-display');
+        let db = null;
+        let auth = null;
+        let userId = null;
+        let isAuthReady = false;
 
-        const API_MODEL = "gemini-2.5-flash-preview-09-2025";
-        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${API_MODEL}:generateContent?key=`;
-        const apiKey = ""; // Leave empty for Canvas environment
+        // UI Elements
+        const promptInput = document.getElementById('prompt-input');
+        const apiKeyInput = document.getElementById('api-key-input'); // <-- NEW: API Key Input
+        const generateButton = document.getElementById('generate-button');
+        const buttonText = document.getElementById('button-text');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const resultOutput = document.getElementById('result-output');
+        const planHistory = document.getElementById('plan-history');
+        const userInfo = document.getElementById('user-info');
+        const planIdDisplay = document.getElementById('plan-id-display');
 
-        // --- UTILITY FUNCTIONS ---
-
-        function syntaxHighlight(json) {
-            if (typeof json != 'string') {
-                 json = JSON.stringify(json, undefined, 4);
-            }
-            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
-                let cls = 'json-number';
-                if (/^"/.test(match)) {
-                    if (/:$/.test(match)) {
-                        cls = 'json-key';
-                    } else {
-                        cls = 'json-string';
-                    }
-                } else if (/true|false|null/.test(match)) {
-                    cls = 'json-number';
-                }
-                return '<span class="' + cls + '">' + match + '</span>';
-            });
-        }
-
-        function formatPlanCard(plan) {
-            const date = plan.createdAt ? new Date(plan.createdAt.seconds * 1000).toLocaleString() : 'Saving...';
-            const taskCount = plan.tasks.length;
-            const goalPreview = plan.goal.length > 80 ? plan.goal.substring(0, 80) + '...' : plan.goal;
-            
-            let totalHours = 0;
-            plan.tasks.forEach(task => totalHours += task.estimateHours);
-
-            return `
-                <div class="bg-white p-4 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition duration-150 cursor-pointer" 
-                     onclick="document.getElementById('result-output').innerHTML = syntaxHighlight(${JSON.stringify(plan.tasks)}); document.getElementById('plan-id-display').textContent = 'Plan ID: ${plan.id}'; document.getElementById('plan-id-display').classList.remove('hidden');">
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="text-sm font-semibold text-blue-600">Plan ID: ${plan.id}</span>
-                        <span class="text-xs text-gray-500">${date}</span>
-                    </div>
-                    <p class="text-base font-medium text-gray-800 mb-2">${goalPreview}</p>
-                    <div class="flex text-sm text-gray-600 space-x-4">
-                        <span><strong class="text-gray-900">${taskCount}</strong> Tasks</span>
-                        <span><strong class="text-gray-900">${totalHours.toFixed(1)}</strong> Total Hrs (Est)</span>
-                    </div>
-                </div>
-            `;
-        }
-
-        // --- FIREBASE INITIALIZATION AND AUTH ---
-
-        async function initFirebase() {
-            try {
-                // setLogLevel('debug'); // Enable detailed Firestore logging
-                const app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-
-                // Sign in using the custom token or anonymously
-                if (initialAuthToken) {
-                    await signInWithCustomToken(auth, initialAuthToken);
-                } else {
-                    await signInAnonymously(auth);
-                }
-
-                // Wait for the auth state to be confirmed
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        userId = user.uid;
-                        isAuthReady = true;
-                        userInfo.textContent = `User ID: ${userId} | App ID: ${appId}`;
-                        loadPlans();
-                    } else {
-                        // This path should ideally not be reached after sign-in attempts
-                        userId = crypto.randomUUID(); 
-                        isAuthReady = true;
-                        userInfo.textContent = `Anonymous ID: ${userId} | App ID: ${appId}`;
-                        planHistory.innerHTML = `<p class="text-center text-red-500">Could not authenticate for real-time history.</p>`;
-                    }
-                });
-
-            } catch (error) {
-                console.error("Firebase Initialization/Auth Error:", error);
-                userInfo.textContent = `Error initializing Firebase.`;
-            }
-        }
-
-        // --- FIRESTORE LOGIC ---
-
-        function getPlansCollectionRef() {
-             // Storing data publicly for team/collaboration display
-             return collection(db, 'artifacts', appId, 'public', 'data', 'projectPlans');
-        }
-
-        function loadPlans() {
-            if (!isAuthReady || !db) return;
-
-            const plansQuery = query(
-                getPlansCollectionRef(),
-                // NOTE: Using orderBy for timestamp here. Firestore requires an index if this isn't on a single field.
-                // We will proceed without orderBy for maximum compatibility and sort client-side.
-            );
-
-            const unsubscribe = onSnapshot(plansQuery, (snapshot) => {
-                const plans = [];
-                snapshot.forEach(doc => {
-                    plans.push({ id: doc.id, ...doc.data() });
-                });
-
-                // Client-side sort by createdAt descending
-                plans.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
-
-                planHistory.innerHTML = plans.length > 0
-                    ? plans.map(formatPlanCard).join('')
-                    : '<p class="text-gray-500 text-center">No plans generated yet. Be the first!</p>';
-
-            }, (error) => {
-                console.error("Firestore Snapshot Error:", error);
-                document.getElementById('history-status').textContent = 'Error loading history.';
-            });
-
-            // The cleanup function for the listener is returned by the onSnapshot call, but in this single-file context we ignore it.
-            // In a React/Angular app, this would be crucial for cleanup.
-        }
-        
-        async function savePlan(goal, tasks) {
-            try {
-                const planRef = await addDoc(getPlansCollectionRef(), {
-                    goal: goal,
-                    tasks: tasks,
-                    userId: userId,
-                    createdAt: serverTimestamp(),
-                    appId: appId
-                });
-                return planRef.id;
-            } catch (error) {
-                console.error("Error saving plan:", error);
-                return null;
-            }
-        }
-
-        // --- GEMINI API LOGIC ---
-
-        async function fetchWithRetry(apiUrl, payload, retries = 3) {
-            for (let i = 0; i < retries; i++) {
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) {
-                        const errorBody = await response.text(); 
-                        const errorMessage = errorBody || response.statusText;
-                        throw new Error(`API Request failed with status ${response.status}: ${errorMessage}`);
-                    }
-
-                    const contentType = response.headers.get("content-type");
-                    if (contentType && contentType.includes("application/json")) {
-                        const result = await response.json(); 
-                        return result;
-                    } else {
-                        const textResponse = await response.text();
-                        throw new Error(`Expected JSON but received non-JSON response: ${textResponse.substring(0, 100)}...`);
-                    }
-
-                } catch (error) {
-                    console.error(`Attempt ${i + 1} failed:`, error.message);
-                    if (i === retries - 1) throw error; 
-                    await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000)); 
-                }
-            }
-        }
-
-        async function handleSubmit() {
-            const prompt = promptInput.value.trim();
-            if (!prompt) {
-                resultOutput.innerHTML = `<span class="text-red-400">Please enter a project goal or user story.</span>`;
-                return;
-            }
-
-            // UI State: Disable button, show loading
-            generateButton.disabled = true;
-            loadingSpinner.classList.remove('hidden');
-            buttonText.textContent = "Analyzing & Decomposing...";
-            resultOutput.innerHTML = `<span class="text-gray-400">Generating plan... This may take a moment.</span>`;
-            planIdDisplay.classList.add('hidden');
-            planIdDisplay.textContent = '';
+        const API_MODEL = "gemini-2.5-flash-preview-09-2025";
+        // We no longer need an 'apiKey' variable here, as we read it from the input field
+        const API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${API_MODEL}:generateContent?key=`;
 
 
-            try {
-                // The Context Engineering Magic: Defining the AI's role and the required structure.
-                const systemPrompt = `You are a highly experienced Agile Technical Lead and Scoping Analyst. Your task is to take a high-level project goal or user story and decompose it into a detailed array of actionable, granular technical tasks. You must be realistic with estimation. Estimate time in whole or half hours (e.g., 2.0, 4.5). Complexity should be a string: 'Low', 'Medium', or 'High'. Respond ONLY with the JSON array that perfectly matches the provided schema.`;
+        // --- UTILITY FUNCTIONS ---
 
-                const payload = {
-                    contents: [{ parts: [{ text: prompt }] }],
-                    systemInstruction: {
-                        parts: [{ text: systemPrompt }]
-                    },
-                    generationConfig: {
-                        responseMimeType: "application/json",
-                        responseSchema: {
-                            type: "ARRAY",
-                            description: "An array of technical tasks derived from the user's project goal.",
-                            items: {
-                                type: "OBJECT",
-                                properties: {
-                                    "taskName": { "type": "STRING", "description": "The specific, actionable technical task." },
-                                    "complexity": { "type": "STRING", "description": "The technical complexity, must be 'Low', 'Medium', or 'High'." },
-                                    "estimateHours": { "type": "NUMBER", "description": "The estimated time in hours (e.g., 3.0, 1.5)." }
-                                },
-                                required: ["taskName", "complexity", "estimateHours"]
-                            }
-                        }
-                    }
-                };
+        function syntaxHighlight(json) {
+            if (typeof json != 'string') {
+                 json = JSON.stringify(json, undefined, 4);
+            }
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+                let cls = 'json-number';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'json-key';
+                    } else {
+                        cls = 'json-string';
+                    }
+                } else if (/true|false|null/.test(match)) {
+                    cls = 'json-number';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
 
-                const result = await fetchWithRetry(API_URL + apiKey, payload);
-                
-                const jsonText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
-                
-                if (jsonText) {
-                    const parsedTasks = JSON.parse(jsonText);
-                    resultOutput.innerHTML = syntaxHighlight(parsedTasks);
-                    
-                    // Save to Firestore for collaborative history
-                    const planId = await savePlan(prompt, parsedTasks);
-                    
-                    if (planId) {
-                        planIdDisplay.textContent = `Plan ID: ${planId}`;
-                        planIdDisplay.classList.remove('hidden');
-                    } else {
-                         console.warn("Plan generated but failed to save to Firestore.");
-                    }
+        function formatPlanCard(plan) {
+            const date = plan.createdAt ? new Date(plan.createdAt.seconds * 1000).toLocaleString() : 'Saving...';
+            const taskCount = plan.tasks.length;
+            const goalPreview = plan.goal.length > 80 ? plan.goal.substring(0, 80) + '...' : plan.goal;
+            
+            let totalHours = 0;
+            plan.tasks.forEach(task => totalHours += task.estimateHours);
 
-                } else {
-                    resultOutput.innerHTML = `<span class="text-red-400">API call succeeded, but no structured JSON was returned.</span>`;
-                }
+            return `
+                <div class="bg-white p-4 border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition duration-150 cursor-pointer" 
+                     onclick="document.getElementById('result-output').innerHTML = syntaxHighlight(${JSON.stringify(plan.tasks)}); document.getElementById('plan-id-display').textContent = 'Plan ID: ${plan.id}'; document.getElementById('plan-id-display').classList.remove('hidden');">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-sm font-semibold text-blue-600">Plan ID: ${plan.id}</span>
+                        <span class="text-xs text-gray-500">${date}</span>
+                    </div>
+                    <p class="text-base font-medium text-gray-800 mb-2">${goalPreview}</p>
+                    <div class="flex text-sm text-gray-600 space-x-4">
+                        <span><strong class="text-gray-900">${taskCount}</strong> Tasks</span>
+                        <span><strong class="text-gray-900">${totalHours.toFixed(1)}</strong> Total Hrs (Est)</span>
+                    </div>
+                </div>
+            `;
+        }
 
-            } catch (error) {
-                console.error("Final generation error:", error);
-                resultOutput.innerHTML = `<span class="text-red-400">Error: ${error.message}. Check console for details.</span>`;
-            } finally {
-                // UI State: Enable button, hide loading
-                generateButton.disabled = false;
-                loadingSpinner.classList.add('hidden');
-                buttonText.textContent = "Generate Structured Plan";
-            }
-        }
+        // --- FIREBASE INITIALIZATION AND AUTH ---
 
-        // Expose handleSubmit globally for the button's onclick
-        window.handleSubmit = handleSubmit;
+        async function initFirebase() {
+            try {
+                // setLogLevel('debug'); // Enable detailed Firestore logging
+                const app = initializeApp(firebaseConfig);
+                db = getFirestore(app);
+                auth = getAuth(app);
 
-        // Start the application
-        initFirebase();
-    </script>
+                // Sign in using the custom token or anonymously
+                if (initialAuthToken) {
+                    await signInWithCustomToken(auth, initialAuthToken);
+                } else {
+                    await signInAnonymously(auth);
+                }
+
+                // Wait for the auth state to be confirmed
+                onAuthStateChanged(auth, (user) => {
+                    if (user) {
+                        userId = user.uid;
+                        isAuthReady = true;
+                        userInfo.textContent = `User ID: ${userId} | App ID: ${appId}`;
+                        loadPlans();
+                    } else {
+                        // This path should ideally not be reached after sign-in attempts
+                        userId = crypto.randomUUID(); 
+                        isAuthReady = true;
+                        userInfo.textContent = `Anonymous ID: ${userId} | App ID: ${appId}`;
+                        planHistory.innerHTML = `<p class="text-center text-red-500">Could not authenticate for real-time history.</p>`;
+                    }
+                });
+
+            } catch (error) {
+                console.error("Firebase Initialization/Auth Error:", error);
+                userInfo.textContent = `Error initializing Firebase.`;
+            }
+        }
+
+        // --- FIRESTORE LOGIC ---
+
+        function getPlansCollectionRef() {
+             // Storing data publicly for team/collaboration display
+             return collection(db, 'artifacts', appId, 'public', 'data', 'projectPlans');
+        }
+
+        function loadPlans() {
+            if (!isAuthReady || !db) return;
+
+            const plansQuery = query(
+                getPlansCollectionRef(),
+                // NOTE: Using orderBy for timestamp here. Firestore requires an index if this isn't on a single field.
+                // We will proceed without orderBy for maximum compatibility and sort client-side.
+            );
+
+            const unsubscribe = onSnapshot(plansQuery, (snapshot) => {
+                const plans = [];
+                snapshot.forEach(doc => {
+                    plans.push({ id: doc.id, ...doc.data() });
+                });
+
+                // Client-side sort by createdAt descending
+                plans.sort((a, b) => (b.createdAt?.seconds || 0) - (a.createdAt?.seconds || 0));
+
+                planHistory.innerHTML = plans.length > 0
+                    ? plans.map(formatPlanCard).join('')
+                    : '<p class="text-gray-500 text-center">No plans generated yet. Be the first!</p>';
+
+            }, (error) => {
+                console.error("Firestore Snapshot Error:", error);
+                document.getElementById('history-status').textContent = 'Error loading history.';
+            });
+
+            // The cleanup function for the listener is returned by the onSnapshot call, but in this single-file context we ignore it.
+            // In a React/Angular app, this would be crucial for cleanup.
+        }
+        
+        async function savePlan(goal, tasks) {
+            try {
+                const planRef = await addDoc(getPlansCollectionRef(), {
+                    goal: goal,
+                    tasks: tasks,
+                    userId: userId,
+                    createdAt: serverTimestamp(),
+                    appId: appId
+                });
+                return planRef.id;
+            } catch (error) {
+                console.error("Error saving plan:", error);
+                return null;
+            }
+        }
+
+        // --- GEMINI API LOGIC (UPDATED) ---
+
+        async function fetchWithRetry(apiUrl, payload, retries = 3) {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorBody = await response.text(); 
+                        const errorMessage = errorBody || response.statusText;
+                        throw new Error(`API Request failed with status ${response.status}: ${errorMessage}`);
+                    }
+
+                    const contentType = response.headers.get("content-type");
+                    if (contentType && contentType.includes("application/json")) {
+                        const result = await response.json(); 
+                        return result;
+                    } else {
+                        const textResponse = await response.text();
+                        throw new Error(`Expected JSON but received non-JSON response: ${textResponse.substring(0, 100)}...`);
+                    }
+
+                } catch (error) {
+                    console.error(`Attempt ${i + 1} failed:`, error.message);
+                    if (i === retries - 1) throw error; 
+                    await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000)); 
+                }
+            }
+        }
+
+        async function handleSubmit() {
+            const prompt = promptInput.value.trim();
+            const apiKey = apiKeyInput.value.trim(); // <-- NEW: Get API Key
+
+            if (!prompt) {
+                resultOutput.innerHTML = `<span class="text-red-400">Please enter a project goal or user story.</span>`;
+                return;
+            }
+            if (!apiKey) { // <-- NEW: Check for API Key
+                resultOutput.innerHTML = `<span class="text-red-400">Please enter your Gemini API Key in the field above to run the analysis.</span>`;
+                return;
+            }
+
+            // UI State: Disable button, show loading
+            generateButton.disabled = true;
+            loadingSpinner.classList.remove('hidden');
+            buttonText.textContent = "Analyzing & Decomposing...";
+            resultOutput.innerHTML = `<span class="text-gray-400">Generating plan... This may take a moment.</span>`;
+            planIdDisplay.classList.add('hidden');
+            planIdDisplay.textContent = '';
+
+
+            try {
+                // The Context Engineering Magic: Defining the AI's role and the required structure.
+                const systemPrompt = `You are a highly experienced Agile Technical Lead and Scoping Analyst. Your task is to take a high-level project goal or user story and decompose it into a detailed array of actionable, granular technical tasks. You must be realistic with estimation. Estimate time in whole or half hours (e.g., 2.0, 4.5). Complexity should be a string: 'Low', 'Medium', or 'High'. Respond ONLY with the JSON array that perfectly matches the provided schema.`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: prompt }] }],
+                    systemInstruction: {
+                        parts: [{ text: systemPrompt }]
+                    },
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "ARRAY",
+                            description: "An array of technical tasks derived from the user's project goal.",
+                            items: {
+                                type: "OBJECT",
+                                properties: {
+                                    "taskName": { "type": "STRING", "description": "The specific, actionable technical task." },
+                                    "complexity": { "type": "STRING", "description": "The technical complexity, must be 'Low', 'Medium', or 'High'." },
+                                    "estimateHours": { "type": "NUMBER", "description": "The estimated time in hours (e.g., 3.0, 1.5)." }
+                                },
+                                required: ["taskName", "complexity", "estimateHours"]
+                            }
+                        }
+                    }
+                };
+
+                // IMPORTANT: We concatenate API_URL with the new apiKey variable
+                const result = await fetchWithRetry(API_URL + apiKey, payload);
+                
+                const jsonText = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+                
+                if (jsonText) {
+                    const parsedTasks = JSON.parse(jsonText);
+                    resultOutput.innerHTML = syntaxHighlight(parsedTasks);
+                    
+                    // Save to Firestore for collaborative history
+                    const planId = await savePlan(prompt, parsedTasks);
+                    
+                    if (planId) {
+                        planIdDisplay.textContent = `Plan ID: ${planId}`;
+                        planIdDisplay.classList.remove('hidden');
+                    } else {
+                         console.warn("Plan generated but failed to save to Firestore.");
+                    }
+
+                } else {
+                    resultOutput.innerHTML = `<span class="text-red-400">API call succeeded, but no structured JSON was returned.</span>`;
+                }
+
+            } catch (error) {
+                console.error("Final generation error:", error);
+                resultOutput.innerHTML = `<span class="text-red-400">Error: ${error.message}. Check console for details.</span>`;
+            } finally {
+                // UI State: Enable button, hide loading
+                generateButton.disabled = false;
+                loadingSpinner.classList.add('hidden');
+                buttonText.textContent = "Generate Structured Plan";
+            }
+        }
+
+        // Expose handleSubmit globally for the button's onclick
+        window.handleSubmit = handleSubmit;
+        window.syntaxHighlight = syntaxHighlight; // Expose for card onclick
+
+        // Start the application
+        initFirebase();
+    </script>
 </body>
 </html>
